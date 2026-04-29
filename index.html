@@ -3,1016 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Envistra Alpha's Private Credit Risk Monitor, April 2026 </title>
-    <meta name="description" content="Institutional macroprudential analysis of the \$1.8T-\$3.5T private credit market.">
-    <meta property="og:title" content="Private Credit Systemic Risk Monitor | Q2 2026">
-    <meta property="og:description" content="Contagion analysis covering default acceleration, PIK proliferation, BDC redemptions, and insurance exposure.">
+    <title>Private Credit Risk Monitor | Envistra Alpha</title>
+    <meta name="description" content="Institutional-grade systemic risk analysis of the \$1.8T-\$3.5T private credit market.">
+    <meta property="og:title" content="Envistra Alpha | Private Credit Risk Monitor Q2 2026">
+    <meta property="og:description" content="Verified contagion analysis: default acceleration, PIK proliferation, BDC redemption crisis, G-SIB exposure.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <style>
-        :root {
-            --white: #ffffff;
-            --bg: #f8f9fa;
-            --bg-alt: #f1f3f5;
-            --border: #e9ecef;
-            --border-dark: #dee2e6;
-            --text: #212529;
-            --text-secondary: #495057;
-            --text-muted: #868e96;
-            --navy: #0c2340;
-            --navy-light: #1a3a5c;
-            --red: #c92a2a;
-            --red-light: #fff5f5;
-            --orange: #d9480f;
-            --orange-light: #fff4e6;
-            --amber: #e67700;
-            --amber-light: #fff9db;
-            --green: #2b8a3e;
-            --green-light: #ebfbee;
-            --blue: #1864ab;
-            --blue-light: #e7f5ff;
-            --purple: #5f3dc4;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-            --shadow: 0 2px 8px rgba(0,0,0,0.08);
-            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
-            --radius: 8px;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-        }
-        .container { max-width: 1360px; margin: 0 auto; padding: 0 24px; }
-
-        /* Header */
-        .top-bar {
-            background: var(--navy);
-            padding: 8px 0;
-            font-size: 11px;
-            color: rgba(255,255,255,0.7);
-        }
-        .top-bar-inner {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .top-bar .brand {
-            font-weight: 600;
-            color: #fff;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            font-size: 10px;
-        }
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(201,42,42,0.2);
-            border: 1px solid rgba(201,42,42,0.4);
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-weight: 600;
-            color: #ffa8a8;
-            font-size: 10px;
-            letter-spacing: 0.5px;
-            margin-left: 16px;
-        }
-        .status-badge .dot {
-            width: 6px; height: 6px;
-            background: #ff6b6b;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-
-        .header {
-            background: var(--white);
-            border-bottom: 1px solid var(--border);
-            padding: 32px 0;
-        }
-        .header h1 {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--navy);
-            margin-bottom: 6px;
-        }
-        .header p {
-            color: var(--text-secondary);
-            font-size: 14px;
-            max-width: 700px;
-        }
-        .header-meta {
-            display: flex;
-            gap: 32px;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-        .header-meta strong { color: var(--text-secondary); }
-
-        /* Navigation */
-        .nav-bar {
-            background: var(--white);
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .nav-bar-inner { display: flex; gap: 0; }
-        .nav-btn {
-            padding: 14px 20px;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-muted);
-            background: none;
-            border: none;
-            border-bottom: 2px solid transparent;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: inherit;
-        }
-        .nav-btn:hover { color: var(--text); }
-        .nav-btn.active {
-            color: var(--navy);
-            border-bottom-color: var(--navy);
-            font-weight: 600;
-        }
-
-        /* Main */
-        .main { padding: 28px 0 48px; }
-        .section { display: none; }
-        .section.active { display: block; }
-
-        /* Alert */
-        .alert {
-            background: var(--red-light);
-            border: 1px solid #ffc9c9;
-            border-radius: var(--radius);
-            padding: 16px 20px;
-            margin-bottom: 24px;
-            display: flex;
-            gap: 14px;
-        }
-        .alert-icon {
-            width: 32px; height: 32px;
-            background: var(--red);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-size: 14px;
-            flex-shrink: 0;
-        }
-        .alert h3 {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--red);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 2px;
-        }
-        .alert p { font-size: 13px; color: var(--text-secondary); }
-
-        /* KPIs */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 16px;
-            margin-bottom: 28px;
-        }
-        .kpi {
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 18px;
-            transition: box-shadow 0.2s;
-        }
-        .kpi:hover { box-shadow: var(--shadow); }
-        .kpi-label {
-            font-size: 10px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-        }
-        .kpi-value {
-            font-size: 26px;
-            font-weight: 700;
-            line-height: 1.1;
-            margin-bottom: 4px;
-        }
-        .kpi-sub { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
-        .kpi-tag {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: 600;
-        }
-        .tag-red { background: var(--red-light); color: var(--red); }
-        .tag-orange { background: var(--orange-light); color: var(--orange); }
-        .tag-amber { background: var(--amber-light); color: var(--amber); }
-        .tag-green { background: var(--green-light); color: var(--green); }
-        .tag-blue { background: var(--blue-light); color: var(--blue); }
-
-        /* Cards & Grids */
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 24px; }
-        .card {
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 20px;
-        }
-        .card-head {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--border);
-        }
-        .card-title { font-size: 14px; font-weight: 600; color: var(--navy); }
-        .card-badge {
-            font-size: 9px;
-            font-weight: 700;
-            padding: 3px 8px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .chart-box { position: relative; height: 280px; }
-
-        /* Tables */
-        .table-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 24px; }
-        .table-card .card-head { padding: 16px 20px; margin-bottom: 0; border-bottom: none; }
-        table { width: 100%; border-collapse: collapse; }
-        thead th {
-            padding: 10px 16px;
-            text-align: left;
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-muted);
-            background: var(--bg);
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-        }
-        tbody td {
-            padding: 12px 16px;
-            font-size: 13px;
-            color: var(--text-secondary);
-            border-bottom: 1px solid var(--border);
-            vertical-align: top;
-        }
-        tbody tr:last-child td { border-bottom: none; }
-        tbody tr:hover { background: var(--bg); }
-        .td-bold { color: var(--text); font-weight: 600; }
-        .sev { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 11px; }
-        .sev-dot { width: 8px; height: 8px; border-radius: 50%; }
-        .sev-critical .sev-dot { background: var(--red); }
-        .sev-critical { color: var(--red); }
-        .sev-high .sev-dot { background: var(--orange); }
-        .sev-high { color: var(--orange); }
-        .sev-medium .sev-dot { background: var(--amber); }
-        .sev-medium { color: var(--amber); }
-
-        /* Threshold bars */
-        .threshold-row { display: flex; align-items: center; gap: 10px; }
-        .threshold-track { flex: 1; height: 6px; background: var(--bg-alt); border-radius: 3px; overflow: hidden; }
-        .threshold-fill { height: 100%; border-radius: 3px; }
-        .threshold-pct { font-size: 12px; font-weight: 700; min-width: 40px; text-align: right; }
-
-        /* Scenarios */
-        .scenarios { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 24px; }
-        .scenario {
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 24px;
-            text-align: center;
-            position: relative;
-        }
-        .scenario::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: var(--radius) var(--radius) 0 0; }
-        .scenario.base::before { background: var(--green); }
-        .scenario.adverse::before { background: var(--orange); }
-        .scenario.black::before { background: var(--red); }
-        .scenario-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-        .base .scenario-label { color: var(--green); }
-        .adverse .scenario-label { color: var(--orange); }
-        .black .scenario-label { color: var(--red); }
-        .scenario-pct { font-size: 40px; font-weight: 700; color: var(--navy); line-height: 1; margin-bottom: 8px; }
-        .scenario-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
-
-        /* Thesis Cards */
-        .thesis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
-        .thesis-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
-        .thesis-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .thesis-title { font-size: 14px; font-weight: 600; color: var(--navy); }
-        .thesis-status { font-size: 9px; font-weight: 700; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .st-verified { background: var(--red-light); color: var(--red); }
-        .st-emerging { background: var(--orange-light); color: var(--orange); }
-        .st-partial { background: var(--amber-light); color: var(--amber); }
-        .thesis-body { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 14px; }
-        .thesis-stat { display: flex; align-items: baseline; gap: 10px; padding-top: 12px; border-top: 1px solid var(--border); }
-        .thesis-stat-val { font-size: 24px; font-weight: 700; }
-        .thesis-stat-lbl { font-size: 11px; color: var(--text-muted); }
-
-        /* Certainty */
-        .certainty-section { margin-bottom: 20px; }
-        .certainty-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-        .certainty-head h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        .c-item { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
-        .c-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 7px; }
-
-        /* Footer */
-        .footer { text-align: center; padding: 32px 0; font-size: 11px; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 24px; }
-
-        /* Responsive */
-        @media (max-width: 1100px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
-        @media (max-width: 800px) {
-            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-            .grid-2, .grid-3, .thesis-grid, .scenarios { grid-template-columns: 1fr; }
-        }
-        @media (max-width: 500px) { .kpi-grid { grid-template-columns: 1fr; } .container { padding: 0 16px; } }
-    </style>
 </head>
 <body>
+<style>
+:root{--ea-white:#fff;--ea-bg:#f7f8fa;--ea-bg-alt:#eef0f4;--ea-border:#dce0e8;--ea-border-light:#e8ebf0;--ea-text:#1a1f36;--ea-text-secondary:#4f566b;--ea-text-muted:#8792a2;--ea-navy:#0a2540;--ea-navy-90:#1a3a5c;--ea-navy-70:#2d5175;--ea-red:#cd3d64;--ea-red-bg:rgba(205,61,100,0.08);--ea-red-border:rgba(205,61,100,0.2);--ea-orange:#cb6e17;--ea-orange-bg:rgba(203,110,23,0.08);--ea-orange-border:rgba(203,110,23,0.2);--ea-amber:#b7791f;--ea-amber-bg:rgba(183,121,31,0.08);--ea-amber-border:rgba(183,121,31,0.2);--ea-green:#1a7f5a;--ea-green-bg:rgba(26,127,90,0.08);--ea-green-border:rgba(26,127,90,0.2);--ea-blue:#3366ff;--ea-blue-bg:rgba(51,102,255,0.08);--ea-blue-border:rgba(51,102,255,0.2);--ea-purple:#6554c0;--ea-purple-bg:rgba(101,84,192,0.08);--ea-shadow-sm:0 1px 2px rgba(10,37,64,0.04);--ea-shadow:0 1px 3px rgba(10,37,64,0.06),0 1px 2px rgba(10,37,64,0.04);--ea-shadow-md:0 4px 12px rgba(10,37,64,0.08);--ea-radius:8px;--ea-radius-lg:12px}*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--ea-bg);color:var(--ea-text);line-height:1.5;-webkit-font-smoothing:antialiased}.container{max-width:1360px;margin:0 auto;padding:0 24px}.topbar{background:var(--ea-navy);padding:10px 0;font-size:11px;letter-spacing:.3px}.topbar-inner{display:flex;justify-content:space-between;align-items:center;color:rgba(255,255,255,.7)}.topbar-left{display:flex;align-items:center;gap:16px}.topbar-brand{font-weight:700;font-size:13px;color:#fff;letter-spacing:.5px}.topbar-brand span{font-weight:400;opacity:.7;margin-left:4px}.risk-indicator{display:inline-flex;align-items:center;gap:6px;background:rgba(205,61,100,.2);border:1px solid rgba(205,61,100,.35);padding:4px 10px;border-radius:4px;font-weight:600;color:#ffa0b4;font-size:10px;letter-spacing:.8px;text-transform:uppercase}.risk-indicator .pulse{width:6px;height:6px;background:#ff6b8a;border-radius:50%;animation:pulse 2s infinite}@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.2)}}.header{background:var(--ea-white);border-bottom:1px solid var(--ea-border);padding:36px 0 28px}.header-eyebrow{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--ea-blue);margin-bottom:8px}.header h1{font-size:30px;font-weight:700;color:var(--ea-navy);letter-spacing:-.5px;margin-bottom:8px}.header-sub{font-size:14px;color:var(--ea-text-secondary);max-width:760px;line-height:1.6}.header-meta{display:flex;flex-wrap:wrap;gap:28px;margin-top:20px;padding-top:20px;border-top:1px solid var(--ea-border-light);font-size:12px;color:var(--ea-text-muted)}.header-meta strong{color:var(--ea-text-secondary);font-weight:600}.nav-wrapper{background:var(--ea-white);border-bottom:1px solid var(--ea-border);position:sticky;top:0;z-index:100}.nav-inner{display:flex;gap:0;overflow-x:auto}.nav-btn{padding:14px 20px;font-size:13px;font-weight:500;color:var(--ea-text-muted);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;transition:all .15s ease;font-family:inherit}.nav-btn:hover{color:var(--ea-text-secondary)}.nav-btn.active{color:var(--ea-navy);border-bottom-color:var(--ea-navy);font-weight:600}.main{padding:28px 0 48px}.section{display:none}.section.active{display:block}.alert{background:var(--ea-red-bg);border:1px solid var(--ea-red-border);border-radius:var(--ea-radius-lg);padding:18px 22px;margin-bottom:24px;display:flex;gap:14px;align-items:flex-start}.alert-icon{width:34px;height:34px;background:var(--ea-red);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;flex-shrink:0}.alert-content h3{font-size:12px;font-weight:700;color:var(--ea-red);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}.alert-content p{font-size:13px;color:var(--ea-text-secondary);line-height:1.55}.kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;margin-bottom:28px}.kpi{background:var(--ea-white);border:1px solid var(--ea-border);border-radius:var(--ea-radius-lg);padding:18px 16px;transition:box-shadow .2s,transform .2s}.kpi:hover{box-shadow:var(--ea-shadow-md);transform:translateY(-1px)}.kpi-label{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--ea-text-muted);margin-bottom:10px}.kpi-value{font-size:26px;font-weight:700;line-height:1.1;margin-bottom:4px;letter-spacing:-.5px}.kpi-sub{font-size:11px;color:var(--ea-text-muted);margin-bottom:10px}.kpi-tag{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:600}.tag-red{background:var(--ea-red-bg);color:var(--ea-red)}.tag-orange{background:var(--ea-orange-bg);color:var(--ea-orange)}.tag-amber{background:var(--ea-amber-bg);color:var(--ea-amber)}.tag-green{background:var(--ea-green-bg);color:var(--ea-green)}.tag-blue{background:var(--ea-blue-bg);color:var(--ea-blue)}.tag-purple{background:var(--ea-purple-bg);color:var(--ea-purple)}.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px}.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:24px}.card{background:var(--ea-white);border:1px solid var(--ea-border);border-radius:var(--ea-radius-lg);padding:22px;transition:box-shadow .2s}.card:hover{box-shadow:var(--ea-shadow-md)}.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--ea-border-light)}.card-title{font-size:14px;font-weight:600;color:var(--ea-navy)}.card-badge{font-size:9px;font-weight:700;padding:3px 9px;border-radius:4px;text-transform:uppercase;letter-spacing:.5px}.chart-box{position:relative;height:280px}.table-card{background:var(--ea-white);border:1px solid var(--ea-border);border-radius:var(--ea-radius-lg);overflow:hidden;margin-bottom:24px}.table-card .card-head{padding:18px 22px;margin-bottom:0;border-bottom:none}table{width:100%;border-collapse:collapse}thead th{padding:11px 18px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--ea-text-muted);background:var(--ea-bg-alt);border-top:1px solid var(--ea-border);border-bottom:1px solid var(--ea-border)}tbody td{padding:13px 18px;font-size:13px;color:var(--ea-text-secondary);border-bottom:1px solid var(--ea-border-light);vertical-align:top;line-height:1.5}tbody tr:last-child td{border-bottom:none}tbody tr:hover td{background:var(--ea-bg)}.td-bold{color:var(--ea-text);font-weight:600}.sev{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:11px}.sev-dot{width:8px;height:8px;border-radius:50%}.sev-critical .sev-dot{background:var(--ea-red)}.sev-critical{color:var(--ea-red)}.sev-high .sev-dot{background:var(--ea-orange)}.sev-high{color:var(--ea-orange)}.sev-medium .sev-dot{background:var(--ea-amber)}.sev-medium{color:var(--ea-amber)}.threshold-row{display:flex;align-items:center;gap:10px}.threshold-track{flex:1;height:6px;background:var(--ea-bg-alt);border-radius:3px;overflow:hidden}.threshold-fill{height:100%;border-radius:3px;transition:width 1s ease}.threshold-pct{font-size:12px;font-weight:700;min-width:42px;text-align:right}.scenarios{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:24px}.scenario{background:var(--ea-white);border:1px solid var(--ea-border);border-radius:var(--ea-radius-lg);padding:26px 22px;text-align:center;position:relative;overflow:hidden}.scenario::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--ea-radius-lg) var(--ea-radius-lg) 0 0}.scenario.base::before{background:var(--ea-green)}.scenario.adverse::before{background:var(--ea-orange)}.scenario.black::before{background:var(--ea-red)}.scenario-label{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:6px}.base .scenario-label{color:var(--ea-green)}.adverse .scenario-label{color:var(--ea-orange)}.black .scenario-label{color:var(--ea-red)}.scenario-pct{font-size:42px;font-weight:700;color:var(--ea-navy);line-height:1;margin-bottom:10px;letter-spacing:-1px}.scenario-desc{font-size:12px;color:var(--ea-text-secondary);line-height:1.55}.thesis-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px}.thesis-card{background:var(--ea-white);border:1px solid var(--ea-border);border-radius:var(--ea-radius-lg);padding:22px}.thesis-card:hover{box-shadow:var(--ea-shadow-md)}.thesis-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.thesis-title{font-size:14px;font-weight:600;color:var(--ea-navy)}.thesis-status{font-size:9px;font-weight:700;padding:4px 10px;border-radius:4px;text-transform:uppercase;letter-spacing:.5px}.st-verified{background:var(--ea-red-bg);color:var(--ea-red);border:1px solid var(--ea-red-border)}.st-emerging{background:var(--ea-orange-bg);color:var(--ea-orange);border:1px solid var(--ea-orange-border)}.st-partial{background:var(--ea-amber-bg);color:var(--ea-amber);border:1px solid var(--ea-amber-border)}.thesis-body{font-size:13px;color:var(--ea-text-secondary);line-height:1.65;margin-bottom:16px}.thesis-stat{display:flex;align-items:baseline;gap:10px;padding-top:14px;border-top:1px solid var(--ea-border-light)}.thesis-stat-val{font-size:26px;font-weight:700;letter-spacing:-.5px}.thesis-stat-lbl{font-size:11px;color:var(--ea-text-muted)}.certainty-section{margin-bottom:20px}.certainty-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--ea-border-light)}.certainty-head h4{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}.c-item{display:flex;align-items:flex-start;gap:10px;padding:7px 0;font-size:13px;color:var(--ea-text-secondary);line-height:1.5}.c-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:7px}.footer{text-align:center;padding:32px 0;font-size:11px;color:var(--ea-text-muted);border-top:1px solid var(--ea-border);margin-top:24px}.footer p+p{margin-top:4px}.footer-brand{font-weight:600;color:var(--ea-navy)}@media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(3,1fr)}}@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.grid-2,.grid-3,.thesis-grid,.scenarios{grid-template-columns:1fr}.header h1{font-size:24px}}@media(max-width:600px){.kpi-grid{grid-template-columns:1fr}.container{padding:0 16px}.topbar-inner{flex-direction:column;gap:8px;text-align:center}.header-meta{flex-direction:column;gap:10px}.nav-btn{padding:12px 16px;font-size:12px}}
+</style>
 
-<!-- TOP BAR -->
-<div class="top-bar">
-    <div class="container top-bar-inner">
-        <div style="display:flex;align-items:center;">
-            <span class="brand">ENVISTRA ALPHA</span>
-        </div>
-        <span>Last updated: April, 2026</span>
-    </div>
+<div class="topbar"><div class="container topbar-inner"><div class="topbar-left"><div class="topbar-brand">ENVISTRA<span>ALPHA</span></div><span class="risk-indicator"><span class="pulse"></span>Risk Level: Elevated</span></div><span>Last Updated: April 28, 2026 · All Data Verified</span></div></div>
+
+<div class="header"><div class="container"><div class="header-eyebrow">Macroprudential Research · Special Report</div><h1>Private Credit Systemic Risk Monitor</h1><p class="header-sub">Institutional-grade diagnostic of the \$1.8T–\$3.5T private credit market following the Dimon Warning. Stress-test analysis covering contagion pathways, valuation opacity, PIK proliferation, and the insurance-banking nexus.</p><div class="header-meta"><span><strong>Date:</strong> April 28, 2026</span><span><strong>Scope:</strong> G-SIB Linkages · BDC Retail · Insurance Nexus</span><span><strong>Sources:</strong> Fitch · OFR · Fed · NAIC · SEC</span><span><strong>Verification:</strong> 100% Primary Sources</span></div></div></div>
+
+<div class="nav-wrapper"><div class="container nav-inner"><button class="nav-btn active" data-section="overview">Market Overview</button><button class="nav-btn" data-section="dimon">Dimon Thesis</button><button class="nav-btn" data-section="contagion">Contagion Matrix</button><button class="nav-btn" data-section="threshold">Shock Thresholds</button><button class="nav-btn" data-section="certainty">Certainty Map</button></div></div>
+
+<div class="main"><div class="container">
+
+<div id="sec-overview" class="section active">
+<div class="alert"><div class="alert-icon">⚡</div><div class="alert-content"><h3>Active Regulatory Trigger — April 2026</h3><p>The Federal Reserve and U.S. Treasury have launched parallel investigations into bank and insurer exposure to private credit. Blue Owl, Blackstone, and KKR have imposed redemption gates. Fitch PCDR at 5.8% — the highest level on record.</p></div></div>
+
+<div class="kpi-grid">
+<div class="kpi"><div class="kpi-label">Market Size</div><div class="kpi-value" style="color:var(--ea-navy)">\$1.8–3.5T</div><div class="kpi-sub">Dimon vs AIMA estimate</div><span class="kpi-tag tag-blue">↑ 25% YoY</span></div>
+<div class="kpi"><div class="kpi-label">Fitch Default Rate</div><div class="kpi-value" style="color:var(--ea-red)">5.8%</div><div class="kpi-sub">TTM Jan 2026</div><span class="kpi-tag tag-red">↑ Record High</span></div>
+<div class="kpi"><div class="kpi-label">PIK by Amendment</div><div class="kpi-value" style="color:var(--ea-orange)">6.1%</div><div class="kpi-sub">Q3 2025 — Crisis &gt;10%</div><span class="kpi-tag tag-orange">↑ from 2.6%</span></div>
+<div class="kpi"><div class="kpi-label">Blue Owl Redemptions</div><div class="kpi-value" style="color:var(--ea-red)">21.9%</div><div class="kpi-sub">Q1 2026 OCIC Fund</div><span class="kpi-tag tag-red">↑ from 5.2%</span></div>
+<div class="kpi"><div class="kpi-label">Insurer Exposure</div><div class="kpi-value" style="color:var(--ea-purple)">\$849B</div><div class="kpi-sub">~47% of PC market</div><span class="kpi-tag tag-purple">↑ 2× since 2014</span></div>
+<div class="kpi"><div class="kpi-label">G-SIB Committed</div><div class="kpi-value" style="color:var(--ea-navy-90)">\$123B</div><div class="kpi-sub">Y-14 incl \$30B BDCs</div><span class="kpi-tag tag-amber">~7.7% Tier 1</span></div>
 </div>
 
-<!-- HEADER -->
-<div class="header">
-    <div class="container">
-        <h1>Private Credit Systemic Risk Monitor</h1>
-        <p>Institutional-grade diagnostic of the \$1.8T–\$3.5T private credit market following the Dimon Warning. Stress-test analysis covering contagion pathways, valuation opacity, PIK proliferation, and the insurance-banking nexus.</p>
-        <div class="header-meta">
-            <span><strong>Date:</strong> April 28, 2026</span>
-            <span><strong>Scope:</strong> G-SIB Linkages, BDC Retail, Insurance Nexus</span>
-            <span><strong>Sources:</strong> Fitch, OFR, Fed, NAIC, SEC</span>
-        </div>
-    </div>
+<div class="grid-2">
+<div class="card"><div class="card-head"><span class="card-title">Default Rate Trajectory</span><span class="card-badge tag-red">Critical</span></div><div class="chart-box"><canvas id="chartDefault"></canvas></div></div>
+<div class="card"><div class="card-head"><span class="card-title">PIK Amendment Proliferation</span><span class="card-badge tag-orange">Accelerating</span></div><div class="chart-box"><canvas id="chartPIK"></canvas></div></div>
 </div>
 
-<!-- NAV -->
-<div class="nav-bar">
-    <div class="container nav-bar-inner">
-        <button class="nav-btn active" data-section="overview">Market Overview</button>
-        <button class="nav-btn" data-section="dimon">Dimon Thesis</button>
-        <button class="nav-btn" data-section="contagion">Contagion Matrix</button>
-        <button class="nav-btn" data-section="threshold">Shock Thresholds</button>
-        <button class="nav-btn" data-section="certainty">Certainty Map</button>
-    </div>
+<div class="grid-2">
+<div class="card"><div class="card-head"><span class="card-title">BDC Redemption Requests (Q1 2026)</span><span class="card-badge tag-red">Gates Active</span></div><div class="chart-box"><canvas id="chartRedemption"></canvas></div></div>
+<div class="card"><div class="card-head"><span class="card-title">Insurance PC Exposure ($B)</span><span class="card-badge tag-purple">Investigation</span></div><div class="chart-box"><canvas id="chartInsurance"></canvas></div></div>
 </div>
 
-<!-- MAIN -->
-<div class="main">
-    <div class="container">
-
-        <!-- SECTION: OVERVIEW -->
-        <div id="sec-overview" class="section active">
-            <div class="alert">
-                <div class="alert-icon">⚡</div>
-                <div>
-                    <h3>Active Regulatory Trigger — April 2026</h3>
-                    <p>The Federal Reserve and U.S. Treasury have launched parallel investigations into bank and insurer exposure to private credit. Blue Owl, Blackstone, and KKR have imposed redemption gates. Fitch PCDR at 5.8% — the highest level on record.</p>
-                </div>
-            </div>
-
-            <div class="kpi-grid">
-                <div class="kpi">
-                    <div class="kpi-label">Market Size</div>
-                    <div class="kpi-value" style="color:var(--navy);">\$1.8–3.5T</div>
-                    <div class="kpi-sub">Dimon vs AIMA estimate</div>
-                    <span class="kpi-tag tag-blue">↑ 25% YoY</span>
-                </div>
-                <div class="kpi">
-                    <div class="kpi-label">Fitch Default Rate</div>
-                    <div class="kpi-value" style="color:var(--red);">5.8%</div>
-                    <div class="kpi-sub">TTM Jan 2026</div>
-                    <span class="kpi-tag tag-red">↑ Record</span>
-                </div>
-                <div class="kpi">
-                    <div class="kpi-label">PIK by Amendment</div>
-                    <div class="kpi-value" style="color:var(--orange);">6.1%</div>
-                    <div class="kpi-sub">Q3 2025 — Crisis >10%</div>
-                    <span class="kpi-tag tag-orange">↑ from 2.6%</span>
-                </div>
-                <div class="kpi">
-                    <div class="kpi-label">Blue Owl Redemptions</div>
-                    <div class="kpi-value" style="color:var(--red);">21.9%</div>
-                    <div class="kpi-sub">Q1 2026 OCIC Fund</div>
-                    <span class="kpi-tag tag-red">↑ from 5.2%</span>
-                </div>
-                <div class="kpi">
-                    <div class="kpi-label">Insurer Exposure</div>
-                    <div class="kpi-value" style="color:var(--purple);">\$849B+</div>
-                    <div class="kpi-sub">~47% of PC market</div>
-                    <span class="kpi-tag tag-orange">↑ 2× since 2014</span>
-                </div>
-                <div class="kpi">
-                    <div class="kpi-label">G-SIB Committed</div>
-                    <div class="kpi-value" style="color:var(--navy-light);">\$123B</div>
-                    <div class="kpi-sub">Y-14 banks incl \$30B BDCs</div>
-                    <span class="kpi-tag tag-amber">~7.7% Tier 1</span>
-                </div>
-            </div>
-
-            <div class="grid-2">
-                <div class="card">
-                    <div class="card-head">
-                        <span class="card-title">Default Rate Trajectory</span>
-                        <span class="card-badge tag-red">Critical</span>
-                    </div>
-                    <div class="chart-box"><canvas id="chartDefault"></canvas></div>
-                </div>
-                <div class="card">
-                    <div class="card-head">
-                        <span class="card-title">PIK Amendment Proliferation</span>
-                        <span class="card-badge tag-orange">Accelerating</span>
-                    </div>
-                    <div class="chart-box"><canvas id="chartPIK"></canvas></div>
-                </div>
-            </div>
-
-            <div class="grid-2">
-                <div class="card">
-                    <div class="card-head">
-                        <span class="card-title">BDC Redemption Requests (Q1 2026)</span>
-                        <span class="card-badge tag-red">Gates Active</span>
-                    </div>
-                    <div class="chart-box"><canvas id="chartRedemption"></canvas></div>
-                </div>
-                <div class="card">
-                    <div class="card-head">
-                        <span class="card-title">Insurance PC Exposure ($B)</span>
-                        <span class="card-badge" style="background:#f3f0ff;color:var(--purple);">Investigation</span>
-                    </div>
-                    <div class="chart-box"><canvas id="chartInsurance"></canvas></div>
-                </div>
-            </div>
-
-            <div class="grid-2">
-                <div class="card">
-                    <div class="card-head">
-                        <span class="card-title">G-SIB Exposure Breakdown ($B)</span>
-                        <span class="card-badge tag-blue">Monitoring</span>
-                    </div>
-                    <div class="chart-box"><canvas id="chartGSIB"></canvas></div>
-                </div>
-                <div class="card">
-                    <div class="card-head">
-                        <span class="card-title">Scenario Probability Distribution</span>
-                        <span class="card-badge tag-amber">Assessment</span>
-                    </div>
-                    <div class="chart-box"><canvas id="chartScenario"></canvas></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECTION: DIMON THESIS -->
-        <div id="sec-dimon" class="section">
-            <div class="thesis-grid">
-                <div class="thesis-card">
-                    <div class="thesis-head">
-                        <span class="thesis-title">Warning #1: Understated Credit Losses</span>
-                        <span class="thesis-status st-verified">Verified</span>
-                    </div>
-                    <p class="thesis-body">Industry-reported headline default rates of 2–3% vastly understate actual distress. Fitch comprehensive tracking shows 9.2% portfolio default rate in 2025 (302 companies). PIK amendments and soft restructurings disguise 59% of default events.</p>
-                    <div class="thesis-stat">
-                        <span class="thesis-stat-val" style="color:var(--red);">5.8%</span>
-                        <span class="thesis-stat-lbl">Fitch PCDR (TTM Jan 2026) — Record High</span>
-                    </div>
-                </div>
-                <div class="thesis-card">
-                    <div class="thesis-head">
-                        <span class="thesis-title">Warning #2: Valuation Opacity</span>
-                        <span class="thesis-status st-verified">Verified</span>
-                    </div>
-                    <p class="thesis-body">Mark-to-model valuations create a "smoothed illusion" of stability. NAV-on-NAV circular dependency chains exist. NAIC found credit ratings inflated by up to 6 notches. Investor exits begin well before credit deterioration is recognized.</p>
-                    <div class="thesis-stat">
-                        <span class="thesis-stat-val" style="color:var(--orange);">6</span>
-                        <span class="thesis-stat-lbl">Notches of rating inflation found by NAIC</span>
-                    </div>
-                </div>
-                <div class="thesis-card">
-                    <div class="thesis-head">
-                        <span class="thesis-title">Warning #3: Insurance Destabilization</span>
-                        <span class="thesis-status st-emerging">Emerging</span>
-                    </div>
-                    <p class="thesis-body">Treasury and Fed launched parallel investigations. Moody's estimates 1/3 of \$6T insurer assets in private credit. "Doom loop" risk: annuity surrenders → forced PC sales → more distress → more withdrawals. 80% of insurers plan to grow PC holdings.</p>
-                    <div class="thesis-stat">
-                        <span class="thesis-stat-val" style="color:var(--purple);">\$849B</span>
-                        <span class="thesis-stat-lbl">Life insurer PC investments (2024)</span>
-                    </div>
-                </div>
-                <div class="thesis-card">
-                    <div class="thesis-head">
-                        <span class="thesis-title">Dimon's Hedge: "Not Systemic"</span>
-                        <span class="thesis-status st-partial">Partially Valid</span>
-                    </div>
-                    <p class="thesis-body">At \$1.8T, individual exposures appear manageable vs. \$1.6T aggregate Tier 1 capital. However, this framing is strategically self-serving — positioning JPMorgan to capture share from weakened non-bank lenders while lobbying for deregulation. Correlated drawdown risk untested.</p>
-                    <div class="thesis-stat">
-                        <span class="thesis-stat-val" style="color:var(--navy);">\$160B</span>
-                        <span class="thesis-stat-lbl">JPMorgan's NBFI exposure (2025)</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECTION: CONTAGION -->
-        <div id="sec-contagion" class="section">
-            <div class="table-card">
-                <div class="card-head">
-                    <span class="card-title">Contagion Transmission Matrix</span>
-                    <span class="card-badge tag-red">6 Active Vectors</span>
-                </div>
-                <div style="overflow-x:auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Severity</th>
-                                <th>Shock Event</th>
-                                <th>Immediate Impact</th>
-                                <th>Second-Order Effect</th>
-                                <th>Systemic Risk</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><span class="sev sev-critical"><span class="sev-dot"></span>Critical</span></td>
-                                <td class="td-bold">Higher-for-longer rates + Iran oil shock</td>
-                                <td>ICRs compress; PIK accelerates among floating-rate borrowers</td>
-                                <td>Refinancing squeeze; cash flow erosion across leveraged mid-market</td>
-                                <td>Cascading NAV markdowns; insurer capital charges spike</td>
-                            </tr>
-                            <tr>
-                                <td><span class="sev sev-critical"><span class="sev-dot"></span>Critical</span></td>
-                                <td class="td-bold">Retail redemption wave</td>
-                                <td>BDC redemptions surge to 9–22% of NAV (exceeds 5% caps)</td>
-                                <td>Gates imposed → reputational contagion → self-reinforcing cycle</td>
-                                <td>Fire sales force mark-to-model re-evaluation across sector</td>
-                            </tr>
-                            <tr>
-                                <td><span class="sev sev-high"><span class="sev-dot"></span>High</span></td>
-                                <td class="td-bold">Software / AI disruption repricing</td>
-                                <td>\$25B of spec-rated software loans trading below 80¢</td>
-                                <td>25–30% portfolio concentration creates sector-wide BDC markdowns</td>
-                                <td>PE-backed portfolio companies become unrefinanceable</td>
-                            </tr>
-                            <tr>
-                                <td><span class="sev sev-high"><span class="sev-dot"></span>High</span></td>
-                                <td class="td-bold">PIK "catch-up" reckoning</td>
-                                <td>PIK by amendment at 6.1% and rising; maturity wall approaching</td>
-                                <td>Compounded principal creates cliff events; BDC RIC distribution issues</td>
-                                <td>BDCs forced to sell assets if PIK exceeds 10% of income</td>
-                            </tr>
-                            <tr>
-                                <td><span class="sev sev-high"><span class="sev-dot"></span>High</span></td>
-                                <td class="td-bold">Insurance forced revaluation</td>
-                                <td>NAIC found ratings inflated by up to 6 notches</td>
-                                <td>Regulators mandate capital top-ups; insurers sell PC holdings</td>
-                                <td>Losses hit pension funds and annuity holders</td>
-                            </tr>
-                            <tr>
-                                <td><span class="sev sev-medium"><span class="sev-dot"></span>Medium</span></td>
-                                <td class="td-bold">G-SIB warehouse facility stress</td>
-                                <td>Rapid drawdowns during market dislocations</td>
-                                <td>Banks hold illiquid mid-market loans; markdowns needed</td>
-                                <td>Credit risk appetite contracts → lending crunch</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECTION: THRESHOLD -->
-        <div id="sec-threshold" class="section">
-            <div class="table-card" style="margin-bottom:24px;">
-                <div class="card-head">
-                    <span class="card-title">Shock Threshold Proximity Analysis</span>
-                    <span class="card-badge" style="background:#f3f0ff;color:var(--purple);">Stress Testing</span>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Metric</th>
-                            <th>Current</th>
-                            <th>Stress Trigger</th>
-                            <th>Crisis Trigger</th>
-                            <th style="min-width:180px;">Proximity</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="td-bold">Fitch PCDR (TTM)</td>
-                            <td>5.8%</td>
-                            <td>8–10%</td>
-                            <td>&gt;12%</td>
-                            <td>
-                                <div class="threshold-row">
-                                    <div class="threshold-track"><div class="threshold-fill" style="width:48%;background:var(--orange);"></div></div>
-                                    <span class="threshold-pct" style="color:var(--orange);">48%</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="td-bold">BDC Redemptions (%NAV/Q)</td>
-                            <td>9–22%</td>
-                            <td>&gt;10% sustained</td>
-                            <td>&gt;20% + liquidations</td>
-                            <td>
-                                <div class="threshold-row">
-                                    <div class="threshold-track"><div class="threshold-fill" style="width:82%;background:var(--red);"></div></div>
-                                    <span class="threshold-pct" style="color:var(--red);">82%</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="td-bold">PIK as % of BDC NII</td>
-                            <td>~8%</td>
-                            <td>&gt;12%</td>
-                            <td>&gt;15%</td>
-                            <td>
-                                <div class="threshold-row">
-                                    <div class="threshold-track"><div class="threshold-fill" style="width:53%;background:var(--orange);"></div></div>
-                                    <span class="threshold-pct" style="color:var(--orange);">53%</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="td-bold">Software Loan Trading</td>
-                            <td>80¢</td>
-                            <td>&lt;70¢</td>
-                            <td>&lt;60¢</td>
-                            <td>
-                                <div class="threshold-row">
-                                    <div class="threshold-track"><div class="threshold-fill" style="width:50%;background:var(--amber);"></div></div>
-                                    <span class="threshold-pct" style="color:var(--amber);">50%</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="td-bold">Insurance Revaluation</td>
-                            <td>Investigation</td>
-                            <td>Formal mandates</td>
-                            <td>Mass capital calls</td>
-                            <td>
-                                <div class="threshold-row">
-                                    <div class="threshold-track"><div class="threshold-fill" style="width:35%;background:var(--amber);"></div></div>
-                                    <span class="threshold-pct" style="color:var(--amber);">35%</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="td-bold">Fed Funds Path</td>
-                            <td>Higher-for-longer</td>
-                            <td>No cuts 2026</td>
-                            <td>Hikes resume</td>
-                            <td>
-                                <div class="threshold-row">
-                                    <div class="threshold-track"><div class="threshold-fill" style="width:60%;background:var(--orange);"></div></div>
-                                    <span class="threshold-pct" style="color:var(--orange);">60%</span>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="scenarios">
-                <div class="scenario base">
-                    <div class="scenario-label">Base Case</div>
-                    <div class="scenario-pct">55%</div>
-                    <p class="scenario-desc">Elevated stress through H2 2026. PCDR rises to 7–8%. Redemptions moderate as gates hold. No systemic event, but significant manager dispersion.</p>
-                </div>
-                <div class="scenario adverse">
-                    <div class="scenario-label">Adverse Scenario</div>
-                    <div class="scenario-pct">30%</div>
-                    <p class="scenario-desc">Oil shock + rate hikes resume. Software defaults accelerate. Multiple BDC liquidations. G-SIBs tighten warehouse facilities. Mid-market credit crunch.</p>
-                </div>
-                <div class="scenario black">
-                    <div class="scenario-label">Black Swan</div>
-                    <div class="scenario-pct">15%</div>
-                    <p class="scenario-desc">Correlated insurance-pension-retail failures. Annuity surrender "doom loop." Fed forced to create emergency NBFI liquidity facility.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECTION: CERTAINTY -->
-        <div id="sec-certainty" class="section">
-            <div class="grid-2">
-                <div class="card">
-                    <div class="certainty-section">
-                        <div class="certainty-head">
-                            <span style="font-size:16px;">✅</span>
-                            <h4 style="color:var(--green);">Verified Facts</h4>
-                        </div>
-                        <div class="c-item"><span class="c-dot" style="background:var(--green);"></span>Fitch PCDR at 5.8% (Jan 2026 TTM); PMR portfolio default rate 9.2% in 2025</div>
-                        <div class="c-item"><span class="c-dot" style="background:var(--green);"></span>Blue Owl OCIC Q1 2026 redemptions: 21.9%; OTIC: 40.7%</div>
-                        <div class="c-item"><span class="c-dot" style="background:var(--green);"></span>Blackstone BCRED: \$3.8B redemption requests (7.9% of \$82.5B)</div>
-                        <div class="c-item"><span class="c-dot" style="background:var(--green);"></span>PIK by amendment: 2.6% (2021) → 6.1% (Q3 2025)</div>
-                        <div class="c-item"><span class="c-dot" style="background:var(--green);"></span>Y-14 banks: \$123B committed to PC obligors; \$30B to BDCs</div>
-                        <div class="c-item"><span class="c-dot" style="background:var(--green);"></span>JPMorgan: ~\$160B NBFI exposure (2025)</div>
-                        <div class="c-item"><span class="c-dot" style="background:var(--green);"></span>Life insurer PC exposure: \$849B+ (doubled since 2014)</div>
-                        <div class="c-item"><span class="c-dot" style="background:var(--green);"></span>Fed & Treasury launched parallel inquiries (April 2026)</div>
-                        <div class="c-item"><span class="c-dot" style="background:var(--green);"></span>NAIC rating inflation study: up to 6-notch inflation found</div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="certainty-section">
-                        <div class="certainty-head">
-                            <span style="font-size:16px;">⚠️</span>
-                            <h4 style="color:var(--orange);">High-Probability Risks</h4>
-                        </div>
-                        <div class="c-item"><span class="c-dot" style="background:var(--orange);"></span>Sustained redemption pressure forces additional BDC liquidations</div>
-                        <div class="c-item"><span class="c-dot" style="background:var(--orange);"></span>Insurance regulators mandate stricter markdowns within 6–12 months</div>
-                        <div class="c-item"><span class="c-dot" style="background:var(--orange);"></span>PIK "maturity wall" creates cliff events in 2027–2028 vintages</div>
-                        <div class="c-item"><span class="c-dot" style="background:var(--orange);"></span>Recovery rates on cov-lite structures: 15–25% below historical</div>
-                        <div class="c-item"><span class="c-dot" style="background:var(--orange);"></span>G-SIB warehouse tightening constrains new origination</div>
-                        <div class="c-item"><span class="c-dot" style="background:var(--orange);"></span>PE-credit feedback loop depresses valuations and exits</div>
-                        <div class="c-item"><span class="c-dot" style="background:var(--orange);"></span>Distressed PC secondary market remains illiquid</div>
-                    </div>
-                    <div class="certainty-section" style="margin-top:16px;">
-                        <div class="certainty-head">
-                            <span style="font-size:16px;">🦢</span>
-                            <h4 style="color:var(--red);">Black Swan Variables</h4>
-                        </div>
-                        <div class="c-item"><span class="c-dot" style="background:var(--red);"></span>Strait of Hormuz closure → oil shock → rate hikes → mass ICR breach</div>
-                        <div class="c-item"><span class="c-dot" style="background:var(--red);"></span>Coordinated annuity surrender wave ("doom loop")</div>
-                        <div class="c-item"><span class="c-dot" style="background:var(--red);"></span>SEC enforcement against major BDC for valuation fraud</div>
-                        <div class="c-item"><span class="c-dot" style="background:var(--red);"></span>NAV lending fund failure cascades through cross-collateralization</div>
-                        <div class="c-item"><span class="c-dot" style="background:var(--red);"></span>Political forced moratorium destroys investor confidence</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
+<div class="grid-2">
+<div class="card"><div class="card-head"><span class="card-title">G-SIB Exposure Breakdown ($B)</span><span class="card-badge tag-blue">Monitoring</span></div><div class="chart-box"><canvas id="chartGSIB"></canvas></div></div>
+<div class="card"><div class="card-head"><span class="card-title">Scenario Probability Distribution</span><span class="card-badge tag-amber">Assessment</span></div><div class="chart-box"><canvas id="chartScenario"></canvas></div></div>
+</div>
 </div>
 
-<!-- FOOTER -->
-<div class="footer">
-    <div class="container">
-        <p>Private Credit Systemic Risk Monitor — Analysis as of April 28, 2026</p>
-        <p>Sources: Fitch Ratings, OFR, Federal Reserve, NAIC, SEC Filings, JPMorgan 2026 Shareholder Letter</p>
-        <p style="margin-top:6px;">For institutional use. This does not constitute investment advice.</p>
-    </div>
+<div id="sec-dimon" class="section">
+<div class="thesis-grid">
+<div class="thesis-card"><div class="thesis-head"><span class="thesis-title">Warning #1: Understated Credit Losses</span><span class="thesis-status st-verified">Verified</span></div><p class="thesis-body">Industry-reported headline default rates of 2–3% vastly understate actual distress. Fitch comprehensive tracking shows 9.2% portfolio default rate in 2025 (302 companies). PIK amendments and soft restructurings disguise 60% of default events.</p><div class="thesis-stat"><span class="thesis-stat-val" style="color:var(--ea-red)">5.8%</span><span class="thesis-stat-lbl">Fitch PCDR (TTM Jan 2026) — Record High</span></div></div>
+<div class="thesis-card"><div class="thesis-head"><span class="thesis-title">Warning #2: Valuation Opacity</span><span class="thesis-status st-verified">Verified</span></div><p class="thesis-body">Mark-to-model valuations create a "smoothed illusion" of stability. NAV-on-NAV circular dependency chains exist. NAIC found credit ratings inflated by up to 6 notches. Investor exits begin well before credit deterioration is recognized.</p><div class="thesis-stat"><span class="thesis-stat-val" style="color:var(--ea-orange)">6</span><span class="thesis-stat-lbl">Notches of rating inflation found by NAIC</span></div></div>
+<div class="thesis-card"><div class="thesis-head"><span class="thesis-title">Warning #3: Insurance Destabilization</span><span class="thesis-status st-emerging">Emerging</span></div><p class="thesis-body">Treasury and Fed launched parallel investigations. Moody's estimates 1/3 of \$6T insurer assets in private credit. "Doom loop" risk: annuity surrenders → forced PC sales → more distress → more withdrawals. 80% of insurers plan to grow PC holdings.</p><div class="thesis-stat"><span class="thesis-stat-val" style="color:var(--ea-purple)">\$849B</span><span class="thesis-stat-lbl">Life insurer PC investments (2024)</span></div></div>
+<div class="thesis-card"><div class="thesis-head"><span class="thesis-title">Dimon's Hedge: "Not Systemic"</span><span class="thesis-status st-partial">Partially Valid</span></div><p class="thesis-body">At \$1.8T, individual exposures appear manageable vs. \$1.6T aggregate Tier 1 capital. However, this framing is strategically self-serving — positioning JPMorgan to capture share from weakened non-bank lenders while lobbying for deregulation.</p><div class="thesis-stat"><span class="thesis-stat-val" style="color:var(--ea-navy)">\$160B</span><span class="thesis-stat-lbl">JPMorgan's NBFI exposure (2025)</span></div></div>
 </div>
+</div>
+
+<div id="sec-contagion" class="section">
+<div class="table-card"><div class="card-head"><span class="card-title">Contagion Transmission Matrix</span><span class="card-badge tag-red">6 Active Vectors</span></div>
+<div style="overflow-x:auto"><table><thead><tr><th>Severity</th><th>Shock Event</th><th>Immediate Impact</th><th>Second-Order Effect</th><th>Systemic Risk</th></tr></thead><tbody>
+<tr><td><span class="sev sev-critical"><span class="sev-dot"></span>Critical</span></td><td class="td-bold">Higher-for-longer rates + Iran oil shock</td><td>ICRs compress; PIK accelerates among floating-rate borrowers</td><td>Refinancing squeeze; cash flow erosion across leveraged mid-market</td><td>Cascading NAV markdowns; insurer capital charges spike</td></tr>
+<tr><td><span class="sev sev-critical"><span class="sev-dot"></span>Critical</span></td><td class="td-bold">Retail redemption wave</td><td>BDC redemptions surge to 9–40% of NAV (far exceeds 5% caps)</td><td>Gates imposed → reputational contagion → self-reinforcing cycle</td><td>Fire sales force mark-to-model re-evaluation across sector</td></tr>
+<tr><td><span class="sev sev-high"><span class="sev-dot"></span>High</span></td><td class="td-bold">Software / AI disruption repricing</td><td>\$25B of spec-rated software loans trading below 80¢</td><td>25–30% portfolio concentration creates sector-wide BDC markdowns</td><td>PE-backed portfolio companies become unrefinanceable</td></tr>
+<tr><td><span class="sev sev-high"><span class="sev-dot"></span>High</span></td><td class="td-bold">PIK "catch-up" reckoning</td><td>PIK by amendment at 6.1% and rising; maturity wall approaching</td><td>Compounded principal creates cliff events; BDC RIC issues</td><td>BDCs forced to sell assets if PIK exceeds 10% of income</td></tr>
+<tr><td><span class="sev sev-high"><span class="sev-dot"></span>High</span></td><td class="td-bold">Insurance forced revaluation</td><td>NAIC found ratings inflated by up to 6 notches</td><td>Regulators mandate capital top-ups; insurers sell PC holdings</td><td>Losses hit pension funds and annuity holders</td></tr>
+<tr><td><span class="sev sev-medium"><span class="sev-dot"></span>Medium</span></td><td class="td-bold">G-SIB warehouse facility stress</td><td>Rapid drawdowns during market dislocations</td><td>Banks hold illiquid mid-market loans; markdowns required</td><td>Credit risk appetite contracts → lending crunch</td></tr>
+</tbody></table></div></div>
+</div>
+
+<div id="sec-threshold" class="section">
+<div class="table-card" style="margin-bottom:24px"><div class="card-head"><span class="card-title">Shock Threshold Proximity Analysis</span><span class="card-badge tag-purple">Stress Testing</span></div>
+<table><thead><tr><th>Metric</th><th>Current</th><th>Stress Trigger</th><th>Crisis Trigger</th><th style="min-width:180px">Proximity</th></tr></thead><tbody>
+<tr><td class="td-bold">Fitch PCDR (TTM)</td><td>5.8%</td><td>8–10%</td><td>&gt;12%</td><td><div class="threshold-row"><div class="threshold-track"><div class="threshold-fill" style="width:48%;background:var(--ea-orange)"></div></div><span class="threshold-pct" style="color:var(--ea-orange)">48%</span></div></td></tr>
+<tr><td class="td-bold">BDC Redemptions (%NAV/Q)</td><td>9–40%</td><td>&gt;10% sustained</td><td>&gt;20% + liquidations</td><td><div class="threshold-row"><div class="threshold-track"><div class="threshold-fill" style="width:85%;background:var(--ea-red)"></div></div><span class="threshold-pct" style="color:var(--ea-red)">85%</span></div></td></tr>
+<tr><td class="td-bold">PIK as % of BDC NII</td><td>~8%</td><td>&gt;12%</td><td>&gt;15%</td><td><div class="threshold-row"><div class="threshold-track"><div class="threshold-fill" style="width:53%;background:var(--ea-orange)"></div></div><span class="threshold-pct" style="color:var(--ea-orange)">53%</span></div></td></tr>
+<tr><td class="td-bold">Software Loan Trading</td><td>80¢</td><td>&lt;70¢</td><td>&lt;60¢</td><td><div class="threshold-row"><div class="threshold-track"><div class="threshold-fill" style="width:50%;background:var(--ea-amber)"></div></div><span class="threshold-pct" style="color:var(--ea-amber)">50%</span></div></td></tr>
+<tr><td class="td-bold">Insurance Revaluation</td><td>Investigation</td><td>Formal mandates</td><td>Mass capital calls</td><td><div class="threshold-row"><div class="threshold-track"><div class="threshold-fill" style="width:35%;background:var(--ea-amber)"></div></div><span class="threshold-pct" style="color:var(--ea-amber)">35%</span></div></td></tr>
+<tr><td class="td-bold">Fed Funds Path</td><td>Higher-for-longer</td><td>No cuts 2026</td><td>Hikes resume</td><td><div class="threshold-row"><div class="threshold-track"><div class="threshold-fill" style="width:60%;background:var(--ea-orange)"></div></div><span class="threshold-pct" style="color:var(--ea-orange)">60%</span></div></td></tr>
+</tbody></table></div>
+
+<div class="scenarios">
+<div class="scenario base"><div class="scenario-label">Base Case</div><div class="scenario-pct">55%</div><p class="scenario-desc">Elevated stress through H2 2026. PCDR rises to 7–8%. Redemptions moderate as gates hold. No systemic event, but significant manager dispersion.</p></div>
+<div class="scenario adverse"><div class="scenario-label">Adverse Scenario</div><div class="scenario-pct">30%</div><p class="scenario-desc">Oil shock + rate hikes resume. Software defaults accelerate. Multiple BDC liquidations. G-SIBs tighten warehouse facilities. Mid-market credit crunch.</p></div>
+<div class="scenario black"><div class="scenario-label">Black Swan</div><div class="scenario-pct">15%</div><p class="scenario-desc">Correlated insurance-pension-retail failures. Annuity surrender "doom loop." Fed forced to create emergency NBFI liquidity facility.</p></div>
+</div>
+</div>
+
+<div id="sec-certainty" class="section">
+<div class="grid-2">
+<div class="card"><div class="certainty-section"><div class="certainty-head"><span style="font-size:16px">✅</span><h4 style="color:var(--ea-green)">Verified Facts [F]</h4></div>
+<div class="c-item"><span class="c-dot" style="background:var(--ea-green)"></span>Fitch PCDR at 5.8% (Jan 2026 TTM); PMR portfolio default rate 9.2% in 2025</div>
+<div class="c-item"><span class="c-dot" style="background:var(--ea-green)"></span>Blue Owl OCIC Q1 2026 redemptions: 21.9%; OTIC: 40.7%</div>
+<div class="c-item"><span class="c-dot" style="background:var(--ea-green)"></span>Blackstone BCRED: \$3.8B redemption requests (7.9% of \$82.5B)</div>
+<div class="c-item"><span class="c-dot" style="background:var(--ea-green)"></span>PIK by amendment: 2.6% (2021) → 6.1% (Q3 2025)</div>
+<div class="c-item"><span class="c-dot" style="background:var(--ea-green)"></span>Y-14 banks: \$123B committed to PC obligors; \$30B to BDCs</div>
+<div class="c-item"><span class="c-dot" style="background:var(--ea-green)"></span>JPMorgan: ~\$160B NBFI exposure (2025)</div>
+<div class="c-item"><span class="c-dot" style="background:var(--ea-green)"></span>Life insurer PC exposure: \$849B (doubled since 2014)</div>
+<div class="c-item"><span class="c-dot" style="background:var(--ea-green)"></span>Fed & Treasury launched parallel inquiries (April 2026)</div>
+<div class="c-item"><span class="c-dot" style="background:var(--ea-green)"></span>PIK drove 60% of defaults (Fitch, March 2026)</div>
+</div></div>
+<div class="card"><div class="certainty-section"><div class="certainty-head"><span style="font-size:16px">⚠️</span><h4 style="color:var(--ea-orange)">High-Probability Risks [P]</h4></div>
+<div class="c-item"><span class="c-dot" style="background:var(--ea-orange)"></span>Sustained redemption pressure forces additional BDC liquidations</div>
+<div class="c-item"><span class="c-dot" style="background:var(--ea-orange)"></span>Insurance regulators mandate stricter markdowns within 6–12 months</div>
+<div class="c-item"><span class="c-dot" style="background:var(--ea-orange)"></span>PIK "maturity wall" creates cliff events in 2027–2028 vintages</div>
+<div class="c-item"><span class="c-dot" style="background:var(--ea-orange)"></span>Recovery rates on cov-lite structures: 15–25% below historical</div>
+<div class="c-item"><span class="c-dot" style="background:var(--ea-orange)"></span>G-SIB warehouse tightening constrains new origination</div>
+<div class="c-item"><span class="c-dot" style="background:var(--ea-orange)"></span>PE-credit feedback loop depresses valuations and exits</div>
+<div class="c-item"><span class="c-dot" style="background:var(--ea-orange)"></span>Distressed PC secondary market remains illiquid</div>
+</div>
+<div class="certainty-section" style="margin-top:18px"><div class="certainty-head"><span style="font-size:16px">🦢</span><h4 style="color:var(--ea-red)">Black Swan Variables</h4></div>
+<div class="c-item"><span class="c-dot" style="background:var(--ea-red)"></span>Strait of Hormuz closure → oil shock → rate hikes → mass ICR breach</div>
+<div class="c-item"><span class="c-dot" style="background:var(--ea-red)"></span>Coordinated annuity surrender wave ("doom loop")</div>
+<div class="c-item"><span class="c-dot" style="background:var(--ea-red)"></span>SEC enforcement against major BDC for valuation fraud</div>
+<div class="c-item"><span class="c-dot" style="background:var(--ea-red)"></span>NAV lending fund failure cascades through cross-collateralization</div>
+<div class="c-item"><span class="c-dot" style="background:var(--ea-red)"></span>Political forced moratorium destroys investor confidence</div>
+</div></div>
+</div>
+</div>
+
+</div></div>
+
+<div class="footer"><div class="container"><p><span class="footer-brand">ENVISTRA ALPHA</span> · Private Credit Systemic Risk Monitor</p><p>Analysis as of April 28, 2026 · All data verified against primary sources</p><p>Sources: Fitch Ratings · OFR · Federal Reserve · NAIC · SEC Filings · JPMorgan Q4 2025 Earnings</p><p style="margin-top:8px">For institutional use only. This analysis does not constitute investment advice.</p></div></div>
 
 <script>
-(function() {
-    // NAV TABS
-    var btns = document.querySelectorAll('.nav-btn');
-    var secs = document.querySelectorAll('.section');
-    btns.forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            var t = this.getAttribute('data-section');
-            btns.forEach(function(b) { b.classList.remove('active'); });
-            secs.forEach(function(s) { s.classList.remove('active'); });
-            this.classList.add('active');
-            document.getElementById('sec-' + t).classList.add('active');
-            if (t === 'overview') {
-                setTimeout(function() { Object.values(Chart.instances).forEach(function(c) { c.resize(); }); }, 100);
-            }
-        });
-    });
-
-    // CHART DEFAULTS
-    Chart.defaults.color = '#868e96';
-    Chart.defaults.borderColor = '#e9ecef';
-    Chart.defaults.font.family = "'Inter', sans-serif";
-    Chart.defaults.font.size = 11;
-    Chart.defaults.plugins.legend.labels.usePointStyle = true;
-    Chart.defaults.plugins.legend.labels.padding = 16;
-    Chart.defaults.plugins.legend.labels.font = { size: 11, weight: '500' };
-
-    var tip = {
-        backgroundColor: '#fff',
-        titleColor: '#212529',
-        bodyColor: '#495057',
-        borderColor: '#e9ecef',
-        borderWidth: 1,
-        padding: 10,
-        cornerRadius: 6,
-        displayColors: true
-    };
-
-    // CHART 1: DEFAULT RATE
-    new Chart(document.getElementById('chartDefault'), {
-        type: 'line',
-        data: {
-            labels: ['2019', '2020', '2021', '2022', '2023', '2024', '2025', 'Jan 26'],
-            datasets: [
-                {
-                    label: 'Fitch PCDR (TTM)',
-                    data: [2.0, 3.5, 1.5, 2.2, 3.0, 3.8, 5.2, 5.8],
-                    borderColor: '#c92a2a',
-                    backgroundColor: 'rgba(201,42,42,0.08)',
-                    borderWidth: 2.5,
-                    fill: true,
-                    tension: 0.35,
-                    pointRadius: 4,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: '#c92a2a',
-                    pointBorderWidth: 2
-                },
-                {
-                    label: 'Fitch PMR Portfolio',
-                    data: [3.0, 5.5, 2.5, 4.0, 6.0, 8.1, 9.2, null],
-                    borderColor: '#d9480f',
-                    borderWidth: 2,
-                    borderDash: [6, 4],
-                    fill: false,
-                    tension: 0.35,
-                    pointRadius: 3,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: '#d9480f',
-                    pointBorderWidth: 2
-                },
-                {
-                    label: 'Industry-Reported',
-                    data: [1.5, 2.5, 0.8, 1.2, 1.5, 2.0, 2.5, 3.0],
-                    borderColor: '#2b8a3e',
-                    borderWidth: 1.5,
-                    borderDash: [3, 3],
-                    fill: false,
-                    tension: 0.35,
-                    pointRadius: 3,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: '#2b8a3e',
-                    pointBorderWidth: 2
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: { intersect: false, mode: 'index' },
-            plugins: { legend: { position: 'top' }, tooltip: tip },
-            scales: {
-                y: { beginAtZero: true, max: 12, ticks: { callback: function(v) { return v + '%'; } }, grid: { color: '#f1f3f5' } },
-                x: { grid: { display: false } }
-            }
-        }
-    });
-
-    // CHART 2: PIK
-    new Chart(document.getElementById('chartPIK'), {
-        type: 'bar',
-        data: {
-            labels: ['2021', '2022', 'Q1 23', 'Q2 23', 'Q3 23', 'Q4 23', 'Q1 24', 'Q2 24', 'Q3 24', 'Q4 24', 'Q1 25', 'Q2 25', 'Q3 25'],
-            datasets: [{
-                label: 'PIK by Amendment (%)',
-                data: [2.6, 3.0, 3.2, 3.5, 3.8, 4.0, 4.3, 4.6, 5.0, 5.3, 5.6, 5.9, 6.1],
-                backgroundColor: function(ctx) {
-                    var v = ctx.raw;
-                    if (v >= 6) return 'rgba(201,42,42,0.7)';
-                    if (v >= 5) return 'rgba(217,72,15,0.7)';
-                    if (v >= 4) return 'rgba(230,119,0,0.7)';
-                    return 'rgba(24,100,171,0.6)';
-                },
-                borderRadius: 4,
-                barPercentage: 0.7
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false }, tooltip: tip },
-            scales: {
-                y: { beginAtZero: true, max: 12, ticks: { callback: function(v) { return v + '%'; } }, grid: { color: '#f1f3f5' } },
-                x: { grid: { display: false }, ticks: { maxRotation: 45 } }
-            }
-        }
-    });
-
-    // CHART 3: REDEMPTIONS
-    new Chart(document.getElementById('chartRedemption'), {
-        type: 'bar',
-        data: {
-            labels: ['Blue Owl OTIC', 'Blue Owl OCIC', 'Blackstone BCRED', 'KKR Fund', '5% Gate Threshold'],
-            datasets: [{
-                label: 'Redemption Requests (% NAV)',
-                data: [40.7, 21.9, 7.9, 8.5, 5.0],
-                backgroundColor: ['#c92a2a', '#c92a2a', '#d9480f', '#d9480f', 'rgba(24,100,171,0.3)'],
-                borderColor: ['#c92a2a', '#c92a2a', '#d9480f', '#d9480f', '#1864ab'],
-                borderWidth: [0, 0, 0, 0, 2],
-                borderRadius: 4,
-                barPercentage: 0.65
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            indexAxis: 'y',
-            plugins: { legend: { display: false }, tooltip: tip },
-            scales: {
-                x: { beginAtZero: true, max: 50, ticks: { callback: function(v) { return v + '%'; } }, grid: { color: '#f1f3f5' } },
-                y: { grid: { display: false } }
-            }
-        }
-    });
-
-    // CHART 4: INSURANCE
-    new Chart(document.getElementById('chartInsurance'), {
-        type: 'line',
-        data: {
-            labels: ['2014', '2016', '2018', '2020', '2022', '2024'],
-            datasets: [{
-                label: 'Life Insurer PC Exposure ($B)',
-                data: [400, 480, 540, 620, 720, 849],
-                borderColor: '#5f3dc4',
-                backgroundColor: 'rgba(95,61,196,0.08)',
-                borderWidth: 2.5,
-                fill: true,
-                tension: 0.35,
-                pointRadius: 5,
-                pointBackgroundColor: '#fff',
-                pointBorderColor: '#5f3dc4',
-                pointBorderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false }, tooltip: tip },
-            scales: {
-                y: { beginAtZero: true, max: 1000, ticks: { callback: function(v) { return '$' + v + 'B'; } }, grid: { color: '#f1f3f5' } },
-                x: { grid: { display: false } }
-            }
-        }
-    });
-
-    // CHART 5: G-SIB
-    new Chart(document.getElementById('chartGSIB'), {
-        type: 'doughnut',
-        data: {
-            labels: ['JPMorgan NBFI', 'Other Y-14 Banks', 'Citigroup PC', 'BDC Facilities'],
-            datasets: [{
-                data: [160, 93, 22, 30],
-                backgroundColor: ['#0c2340', '#1a3a5c', '#1864ab', '#74c0fc'],
-                borderWidth: 0,
-                hoverOffset: 8
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'right', labels: { padding: 12 } },
-                tooltip: Object.assign({}, tip, {
-                    callbacks: { label: function(ctx) { return ctx.label + ': $' + ctx.raw + 'B'; } }
-                })
-            }
-        }
-    });
-
-    // CHART 6: SCENARIO
-    new Chart(document.getElementById('chartScenario'), {
-        type: 'pie',
-        data: {
-            labels: ['Base Case (55%)', 'Adverse (30%)', 'Black Swan (15%)'],
-            datasets: [{
-                data: [55, 30, 15],
-                backgroundColor: ['#2b8a3e', '#d9480f', '#c92a2a'],
-                borderWidth: 0,
-                hoverOffset: 8
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'right', labels: { padding: 12 } },
-                tooltip: tip
-            }
-        }
-    });
-})();
+(function(){'use strict';var n=document.querySelectorAll('.nav-btn'),s=document.querySelectorAll('.section');function switchTab(t){n.forEach(function(b){b.classList.remove('active')});s.forEach(function(x){x.classList.remove('active')});document.querySelector('[data-section="'+t+'"]').classList.add('active');document.getElementById('sec-'+t).classList.add('active');if(t==='overview'){setTimeout(function(){Object.values(Chart.instances).forEach(function(c){if(c)c.resize()})},100)}}n.forEach(function(b){b.addEventListener('click',function(){switchTab(this.getAttribute('data-section'))})});Chart.defaults.color='#8792a2';Chart.defaults.borderColor='#e8ebf0';Chart.defaults.font.family="'Inter',sans-serif";Chart.defaults.font.size=11;Chart.defaults.plugins.legend.labels.usePointStyle=true;Chart.defaults.plugins.legend.labels.padding=16;var tt={backgroundColor:'#fff',titleColor:'#1a1f36',bodyColor:'#4f566b',borderColor:'#dce0e8',borderWidth:1,padding:12,cornerRadius:8,displayColors:true};var c1=document.getElementById('chartDefault');if(c1){new Chart(c1,{type:'line',data:{labels:['2019','2020','2021','2022','2023','2024','2025','Jan 26'],datasets:[{label:'Fitch PCDR (TTM)',data:[2.0,3.5,1.5,2.2,3.0,3.8,5.2,5.8],borderColor:'#cd3d64',backgroundColor:'rgba(205,61,100,0.08)',borderWidth:2.5,fill:true,tension:0.35,pointRadius:4,pointBackgroundColor:'#fff',pointBorderColor:'#cd3d64',pointBorderWidth:2},{label:'Fitch PMR Portfolio',data:[3.0,5.5,2.5,4.0,6.0,8.1,9.2,null],borderColor:'#cb6e17',borderWidth:2,borderDash:[6,4],fill:false,tension:0.35,pointRadius:3,pointBackgroundColor:'#fff',pointBorderColor:'#cb6e17',pointBorderWidth:2},{label:'Industry-Reported',data:[1.5,2.5,0.8,1.2,1.5,2.0,2.5,3.0],borderColor:'#1a7f5a',borderWidth:1.5,borderDash:[3,3],fill:false,tension:0.35,pointRadius:3,pointBackgroundColor:'#fff',pointBorderColor:'#1a7f5a',pointBorderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},plugins:{legend:{position:'top'},tooltip:tt},scales:{y:{beginAtZero:true,max:12,ticks:{callback:function(v){return v+'%'}},grid:{color:'#f0f2f5'}},x:{grid:{display:false}}}}})}var c2=document.getElementById('chartPIK');if(c2){new Chart(c2,{type:'bar',data:{labels:['2021','2022','Q1 23','Q2 23','Q3 23','Q4 23','Q1 24','Q2 24','Q3 24','Q4 24','Q1 25','Q2 25','Q3 25'],datasets:[{label:'PIK by Amendment (%)',data:[2.6,3.0,3.2,3.5,3.8,4.0,4.3,4.6,5.0,5.3,5.6,5.9,6.1],backgroundColor:function(ctx){var v=ctx.raw;if(v>=6)return'rgba(205,61,100,0.75)';if(v>=5)return'rgba(203,110,23,0.75)';if(v>=4)return'rgba(183,121,31,0.75)';return'rgba(51,102,255,0.6)'},borderRadius:4,barPercentage:0.7}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:tt},scales:{y:{beginAtZero:true,max:12,ticks:{callback:function(v){return v+'%'}},grid:{color:'#f0f2f5'}},x:{grid:{display:false},ticks:{maxRotation:45}}}}})}var c3=document.getElementById('chartRedemption');if(c3){new Chart(c3,{type:'bar',data:{labels:['Blue Owl OTIC','Blue Owl OCIC','Blackstone BCRED','KKR Fund','5% Gate Threshold'],datasets:[{label:'Redemption Requests (% NAV)',data:[40.7,21.9,7.9,8.5,5.0],backgroundColor:['#cd3d64','#cd3d64','#cb6e17','#cb6e17','rgba(51,102,255,0.25)'],borderColor:['#cd3d64','#cd3d64','#cb6e17','#cb6e17','#3366ff'],borderWidth:[0,0,0,0,2],borderRadius:4,barPercentage:0.65}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:tt},scales:{x:{beginAtZero:true,max:50,ticks:{callback:function(v){return v+'%'}},grid:{color:'#f0f2f5'}},y:{grid:{display:false}}}}})}var c4=document.getElementById('chartInsurance');if(c4){new Chart(c4,{type:'line',data:{labels:['2014','2016','2018','2020','2022','2024'],datasets:[{label:'Life Insurer PC Exposure ($B)',data:[400,480,540,620,720,849],borderColor:'#6554c0',backgroundColor:'rgba(101,84,192,0.08)',borderWidth:2.5,fill:true,tension:0.35,pointRadius:5,pointBackgroundColor:'#fff',pointBorderColor:'#6554c0',pointBorderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:tt},scales:{y:{beginAtZero:true,max:1000,ticks:{callback:function(v){return'$'+v+'B'}},grid:{color:'#f0f2f5'}},x:{grid:{display:false}}}}})}var c5=document.getElementById('chartGSIB');if(c5){new Chart(c5,{type:'doughnut',data:{labels:['JPMorgan NBFI (\$160B)','Other Y-14 Banks (\$93B)','Citigroup PC (\$22B)','BDC Facilities (\$30B)'],datasets:[{data:[160,93,22,30],backgroundColor:['#0a2540','#1a3a5c','#2d5175','#5a8ec2'],borderWidth:0,hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{padding:14}},tooltip:tt}}})}var c6=document.getElementById('chartScenario');if(c6){new Chart(c6,{type:'pie',data:{labels:['Base Case (55%)','Adverse (30%)','Black Swan (15%)'],datasets:[{data:[55,30,15],backgroundColor:['#1a7f5a','#cb6e17','#cd3d64'],borderWidth:0,hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{padding:14}},tooltip:tt}}})}})();
 </script>
-
 </body>
 </html>
